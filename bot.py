@@ -1,4 +1,4 @@
-import discord
+import discord, time
 from discord.ext import commands
 
 token = ('NTg3NTYzMjk3NjUwMjQ1NjU4.XP4Y9g.hU0I2XSCMGiV9A2jnwi0oUp97bw')
@@ -11,16 +11,22 @@ async def on_ready():
     print('Bot logged in!')
     await client.change_presence(activity=discord.Game('Baumstamm'))
 
-
 @client.command()
-async def help(ctx):
-    embed = discord.Embed(title='Baum Bot', description='Alle Commands für den Bot', color=0x00ff00)
-    embed.add_field(name='.ping', value='Pings the bot')
-    embed.add_field(name='.clear', value='Clears some or all messages in a channel')
-    embed.add_field(name='.kick', value='Kicks a user')
-    embed.add_field(name='.ban', value='Bans a user')
-    embed.add_field(name='.unban', value='Unbans a user')
-    await ctx.send(embed = embed)
+async def help(ctx, category=None):
+    if category == None:
+        embed = discord.Embed(title='All Bot Commands', description='Use .help (command) to see command specific help pages', color=0x00ff00)
+        embed.add_field(name='.ping', value='Ping the bot')
+        embed.add_field(name='.clear', value='Clear messages in a channel')
+        embed.add_field(name='.kick', value='Kick a user')
+        embed.add_field(name='.ban', value='Ban a user')
+        embed.add_field(name='.unban', value='Unban a user')
+        await ctx.send(embed = embed)
+    
+    elif category == ping:
+        await ctx.send('hi')
+
+    else:
+        await ctx.send("This help page doesn't exitst!")
 
 
 @client.command()
@@ -29,9 +35,15 @@ async def ping(ctx):
 
 
 @client.command()
+@commands.has_permissions(manage_messages=True)
 async def clear(ctx, amount=None):
     if amount == None:
+        if clear_confirm == True:
         await ctx.channel.purge()
+            #clear_confirm = false
+        #else:
+            #await ctx.send("To delete all messages resend the command")
+            
     else: 
         await ctx.channel.purge(limit=int(amount) + 1)
 
@@ -87,7 +99,7 @@ async def on_member_join(member):
     guild=member.guild
     message = f'{member.mention} ist nun ein Baum!'
     await channel.send(message)
-    await member.edit(nick=f'Baum🌳🌲{member.name}', reason='Prefix edit')
+    await member.edit(nick=f'Baum🌳🌲{member.name}')
     baumrole = get(member.guild.roles, name='Baum')
     await member.add_role(baumrole)
 
